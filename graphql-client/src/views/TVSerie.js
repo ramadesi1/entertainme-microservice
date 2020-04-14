@@ -5,6 +5,7 @@ import { gql } from 'apollo-boost'
 import { ApolloConsumer } from 'react-apollo'
 import { useMutation } from '@apollo/react-hooks'
 import { useHistory } from 'react-router-dom'
+import Loading from '../components/Loading'
 
 const UPDATE_TVSERIE = gql`
   mutation updateTVSerie(
@@ -54,13 +55,13 @@ export default function TVSerieDetail() {
     variables: { tvserieId: id },
   })
 
-
   const [updateTVSerie] = useMutation(UPDATE_TVSERIE, {
     update(cache, { data: { updateTVSerie } }) {
       cache.writeQuery({
         query: GET_TVSERIE_DETAILS,
         data: { tvserie: updateTVSerie },
       })
+      setIsLoading(false)
     },
   })
 
@@ -71,9 +72,10 @@ export default function TVSerieDetail() {
   const [poster_path, setPosterPath] = useState('')
   const [popularity, setPopularity] = useState('')
   const [tags, setTags] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   if (loading) {
-    return <h1>Loading...</h1>
+    return <Loading />
   }
 
   if (error) {
@@ -97,6 +99,7 @@ export default function TVSerieDetail() {
 
   function handleUpdateSubmit(e) {
     e.preventDefault()
+    setIsLoading(true)
     updateTVSerie({
       variables: { id: _id, title, overview, poster_path, popularity, tags },
     })
@@ -118,11 +121,13 @@ export default function TVSerieDetail() {
                     <p className="card-header-title">TVSerie Detail</p>
                   </header>
                   <div className="card-content">
+                    {isLoading && <Loading />}
                     {edit === false ? (
                       <>
                         <div className="content">
                           <p className="title">{data.tvserie.title}</p>
                           <p className="subtitle">{data.tvserie.overview}</p>
+                          <p className="subtitle">Popularity: {data.tvserie.popularity}</p>
                           <p className="subtitle">
                             <strong>
                               Tags:{' '}
@@ -200,7 +205,7 @@ export default function TVSerieDetail() {
                                 className="input"
                                 type="number"
                                 value={popularity}
-                                onChange={(e) => setPopularity(e.target.value)}
+                                onChange={(e) => setPopularity(Number(e.target.value))}
                                 placeholder="Popularity"
                               />
                             </div>

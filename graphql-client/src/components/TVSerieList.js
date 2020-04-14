@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
+import Loading from '../components/Loading'
 
 const TVSERIES = gql`
   {
@@ -27,6 +28,7 @@ const DELETE_TVSERIE = gql`
 export default function TVSerieList(props) {
   const { tvseries } = props
   const history = useHistory()
+  const [loading, setLoading] = useState(false)
 
   function handleDetailClick(id) {
     history.push('/tvseries/' + id)
@@ -43,10 +45,12 @@ export default function TVSerieList(props) {
         query: TVSERIES,
         data: newData,
       })
+      setLoading(false)
     },
   })
 
   function handleDeleteClick(id) {
+    setLoading(true)
     deleteTVSerie({ variables: { id } })
   }
   function handleAddClick() {
@@ -73,6 +77,7 @@ export default function TVSerieList(props) {
                 <div className="media-content">
                   <p className="title">{tvserie.title}</p>
                   <p className="subtitle">{tvserie.overview}</p>
+                  <p className="subtitle">Popularity: {tvserie.popularity}</p>
                   <p className="subtitle">
                     Tags: {tvserie.tags && tvserie.tags.join(', ')}
                   </p>
@@ -97,6 +102,7 @@ export default function TVSerieList(props) {
             </div>
           </div>
         ))}
+        {loading && <Loading />}
       </div>
     </>
   )

@@ -2,6 +2,7 @@ import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import TVSerieList from '../components/TVSerieList'
+import Loading from '../components/Loading'
 
 const FETCH_TVSERIES = gql`
   {
@@ -20,7 +21,7 @@ export default function TVSeries() {
   const { loading, error, data } = useQuery(FETCH_TVSERIES)
 
   if (loading) {
-    return <h1>Loading...</h1>
+    return <Loading />
   }
 
   if (error) {

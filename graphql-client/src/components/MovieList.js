@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
+import Loading from '../components/Loading'
 
 const MOVIES = gql`
   {
@@ -27,6 +28,7 @@ const DELETE_MOVIE = gql`
 export default function MovieList(props) {
   const { movies } = props
   const history = useHistory()
+  const [loading, setLoading] = useState(false)
 
   function handleDetailClick(id) {
     history.push('/movies/' + id)
@@ -43,22 +45,17 @@ export default function MovieList(props) {
         query: MOVIES,
         data: newData,
       })
+      setLoading(false)
     },
   })
 
   function handleDeleteClick(id) {
+    setLoading(true)
     deleteMovie({ variables: { id } })
   }
   function handleAddClick() {
     history.push('/addmovie')
   }
-
-  //     title
-  //     overview
-  //     poster_path
-  //     popularity
-  //     tags
-
   return (
     <>
       <div className="container">
@@ -79,6 +76,7 @@ export default function MovieList(props) {
                 <div className="media-content">
                   <p className="title">{movie.title}</p>
                   <p className="subtitle">{movie.overview}</p>
+                  <p className="subtitle">Popularity: {movie.popularity}</p>
                   <p className="subtitle">
                     Tags: {movie.tags && movie.tags.join(', ')}
                   </p>
@@ -103,6 +101,7 @@ export default function MovieList(props) {
             </div>
           </div>
         ))}
+        {loading && <Loading />}
       </div>
     </>
   )

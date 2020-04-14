@@ -5,6 +5,7 @@ import { gql } from 'apollo-boost'
 import { ApolloConsumer } from 'react-apollo'
 import { useMutation } from '@apollo/react-hooks'
 import { useHistory } from 'react-router-dom'
+import Loading from '../components/Loading'
 
 const UPDATE_MOVIE = gql`
   mutation updateMovie(
@@ -60,6 +61,7 @@ export default function MovieDetail() {
         query: GET_MOVIE_DETAILS,
         data: { movie: updateMovie },
       })
+      setIsLoading(false)
     },
   })
 
@@ -70,9 +72,10 @@ export default function MovieDetail() {
   const [poster_path, setPosterPath] = useState('')
   const [popularity, setPopularity] = useState('')
   const [tags, setTags] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   if (loading) {
-    return <h1>Loading...</h1>
+    return <Loading />
   }
 
   if (error) {
@@ -96,6 +99,7 @@ export default function MovieDetail() {
 
   function handleUpdateSubmit(e) {
     e.preventDefault()
+    setIsLoading(true)
     updateMovie({
       variables: { id: _id, title, overview, poster_path, popularity, tags },
     })
@@ -117,11 +121,13 @@ export default function MovieDetail() {
                     <p className="card-header-title">Movie Detail</p>
                   </header>
                   <div className="card-content">
+                    {isLoading && <Loading />}
                     {edit === false ? (
                       <>
                         <div className="content">
                           <p className="title">{data.movie.title}</p>
                           <p className="subtitle">{data.movie.overview}</p>
+                          <p className="subtitle">Popularity: {data.tvserie.popularity}</p>
                           <p className="subtitle">
                             <strong>
                               Tags:{' '}

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
+import Loading from '../components/Loading'
 
 const FETCH_MOVIES = gql`
   {
@@ -48,6 +49,7 @@ export default function AddMovie() {
   const [poster_path, setPosterPath] = useState('')
   const [popularity, setPopularity] = useState('')
   const [tags, setTags] = useState([])
+  const [loading, setLoading] = useState(false)
   function handleCancelAdd() {
     history.push('/')
   }
@@ -58,15 +60,18 @@ export default function AddMovie() {
         query: FETCH_MOVIES,
         data: { movies: movies.concat([addMovie]) },
       })
+      setLoading(false)
     },
   })
   function handleAddSubmit(e) {
+    setLoading(true)
     e.preventDefault()
     addMovie({ variables: { title, overview, poster_path, popularity, tags } })
     history.push('/')
   }
   return (
     <>
+      {loading && <Loading />}
       <form onSubmit={handleAddSubmit}>
         <div className="field">
           <label className="label">Title</label>

@@ -2,6 +2,7 @@ import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import MovieList from '../components/MovieList'
+import Loading from '../components/Loading'
 
 const FETCH_MOVIES = gql`
   {
@@ -20,7 +21,7 @@ export default function Movies() {
   const { loading, error, data } = useQuery(FETCH_MOVIES)
   
   if (loading) {
-    return <h1>Loading...</h1>
+    return <Loading/>
   }
 
   if (error) {
